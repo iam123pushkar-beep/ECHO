@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECHO - Sci-Fi Temporal Puzzle Experience</title>
+  <meta name="description" content="A cinematic sci-fi puzzle game set in an abandoned futuristic facility. Evade your temporal echoes, manipulate paradoxical timelines, and escape.">
+  
+  <!-- Modern Sci-Fi Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  
+  <!-- Glowing Cyber Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%2304070e' stroke='%2300f0ff' stroke-width='6'/><circle cx='50' cy='50' r='18' fill='%2300f0ff'/></svg>">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="cyber-container">
+    <!-- Ambient Background Lighting -->
+    <div class="background-scanlines"></div>
+    <div class="background-glow"></div>
+
+    <!-- Game Screen Wrapper -->
+    <div class="game-wrapper" id="game-wrapper">
+      
+      <!-- Minimal Professional Sci-Fi HUD -->
+      <header class="game-hud" id="game-hud">
+        <!-- TOP LEFT -->
+        <div class="hud-top-left">
+          <div class="hud-brand">ECHO</div>
+          <div class="hud-level-title" id="hud-level-title">LEVEL 01 // THE FIRST ECHO</div>
+          <div class="hud-objective-wrap">
+            <span class="hud-obj-icon">▶</span>
+            <span class="hud-objective" id="hud-objective">COLLECT ENERGY ORBS [0 / 3]</span>
+          </div>
+        </div>
+
+        <!-- CENTER ALERTS (Echo Warning & Exit Notifications) -->
+        <div class="hud-center-alerts" id="hud-center-alerts">
+          <!-- Echo Incoming Warning Banner -->
+          <div class="hud-alert-banner warning hidden" id="hud-warning-alert">
+            <div class="alert-tag">TEMPORAL HAZARD</div>
+            <div class="alert-title">ECHO INCOMING</div>
+            <div class="alert-countdown" id="hud-countdown-num">3</div>
+          </div>
+
+          <!-- Exit Unlocked Banner -->
+          <div class="hud-alert-banner success hidden" id="hud-exit-alert">
+            <div class="alert-tag">FACILITY OVERRIDE</div>
+            <div class="alert-title">EXIT UNLOCKED</div>
+            <div class="alert-sub">EXTRACTION PORTAL ACTIVE</div>
+          </div>
+
+          <!-- Memory Stabilized Banner (Level 5) -->
+          <div class="hud-alert-banner victory hidden" id="hud-stabilized-alert">
+            <div class="alert-tag">CHRONO-NEXUS COHERENT</div>
+            <div class="alert-title">MEMORY STABILIZED</div>
+            <div class="alert-sub">GRAND EXTRACTION PORTAL INITIALIZED</div>
+          </div>
+        </div>
+
+        <!-- TOP RIGHT -->
+        <div class="hud-top-right">
+          <div class="hud-stat-line">
+            <span class="hud-stat-label">ORBS:</span>
+            <span class="hud-stat-val" id="hud-orbs-val">0 / 3</span>
+          </div>
+          <div class="hud-stat-line">
+            <span class="hud-stat-label">ECHOES:</span>
+            <span class="hud-stat-val" id="hud-echoes-val">0 / 1</span>
+          </div>
+          <div class="hud-stat-line">
+            <span class="hud-stat-label">LIVES:</span>
+            <span class="hud-stat-val lives-val" id="hud-lives-val">3</span>
+          </div>
+          <div class="hud-stat-line memory-line">
+            <span class="hud-stat-label">MEMORY:</span>
+            <span class="hud-stat-val memory-val" id="hud-memory-val">10.0s</span>
+            <div class="hud-memory-bar-wrap">
+              <div class="hud-memory-bar-fill" id="hud-memory-fill"></div>
+            </div>
+          </div>
+
+          <!-- Discreet Controls -->
+          <div class="hud-mini-actions">
+            <button class="hud-mini-btn" id="btn-hud-sync" title="Fast-forward cycle (Spacebar)">⚡</button>
+            <button class="hud-mini-btn" id="btn-hud-pause" title="Pause Game [Esc / P]">⏸</button>
+            <button class="hud-mini-btn" id="btn-hud-restart" title="Restart Level [R]">↺</button>
+            <button class="hud-mini-btn" id="btn-mute" title="Toggle Audio [M]"><span id="mute-icon">🔊</span></button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Canvas Frame -->
+      <div class="canvas-container">
+        <canvas id="game-canvas" width="960" height="640"></canvas>
+      </div>
+
+      <!-- OVERLAY: Main Menu -->
+      <div class="modal-overlay" id="menu-overlay">
+        <div class="menu-box cinematic-menu">
+          <div class="menu-branding">
+            <h1 class="main-title" data-text="ECHO">ECHO</h1>
+            <div class="main-tagline">"YOUR PAST IS WATCHING"</div>
+          </div>
+
+          <div class="menu-actions vertical-centered">
+            <button class="cyber-btn primary" id="btn-start-game">
+              <span>PLAY</span>
+            </button>
+            <button class="cyber-btn secondary" id="btn-level-select">
+              <span>LEVEL SELECT</span>
+            </button>
+            <button class="cyber-btn secondary" id="btn-how-to-play">
+              <span>HOW TO PLAY</span>
+            </button>
+            <button class="cyber-btn secondary" id="btn-settings">
+              <span>SETTINGS</span>
+            </button>
+          </div>
+
+          <div class="menu-footer-hints">
+            <span>WASD / Arrow Keys to Move</span>
+            <span class="dot">•</span>
+            <span>[Space] Sync Echo</span>
+            <span class="dot">•</span>
+            <span>[P / Esc] Pause</span>
+            <span class="dot">•</span>
+            <span>[R] Restart</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- OVERLAY: Pause Menu -->
+      <div class="modal-overlay hidden" id="pause-overlay">
+        <div class="menu-box compact">
+          <h2 class="modal-title">TEMPORAL SUSPENSION</h2>
+          <div class="modal-sub">Simulation State Frozen</div>
+          
+          <div class="menu-actions vertical">
+            <button class="cyber-btn primary" id="btn-resume">
+              <span>RESUME</span>
+            </button>
+            <button class="cyber-btn secondary" id="btn-pause-restart">
+              <span>RETRY LEVEL [R]</span>
+            </button>
+            <button class="cyber-btn tertiary" id="btn-pause-menu">
+              <span>MAIN MENU</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OVERLAY: Level Complete -->
+      <div class="modal-overlay hidden" id="complete-overlay">
+        <div class="menu-box success cinematic-complete">
+          <div class="complete-header">
+            <div class="stamp-badge">SECTOR CLEARANCE VERIFIED</div>
+            <h2 class="modal-title victory-glow">LEVEL COMPLETE</h2>
+          </div>
+
+          <div class="stats-panel">
+            <div class="stat-card">
+              <div class="stat-label">TIME</div>
+              <div class="stat-number" id="complete-time">00:00.0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">ORBS</div>
+              <div class="stat-number" id="complete-orbs">3 / 3</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">ECHOES CREATED</div>
+              <div class="stat-number" id="complete-cycles">1</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">LIVES REMAINING</div>
+              <div class="stat-number" id="complete-lives">3 / 3</div>
+            </div>
+          </div>
+
+          <div class="menu-actions">
+            <button class="cyber-btn primary" id="btn-complete-next">
+              <span>NEXT LEVEL</span>
+            </button>
+            <button class="cyber-btn secondary" id="btn-complete-replay">
+              <span>REPLAY LEVEL</span>
+            </button>
+            <button class="cyber-btn tertiary" id="btn-complete-menu">
+              <span>MAIN MENU</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OVERLAY: Game Over -->
+      <div class="modal-overlay hidden" id="game-over-overlay">
+        <div class="menu-box danger cinematic-gameover">
+          <div class="gameover-header">
+            <h1 class="gameover-title">ECHO</h1>
+            <div class="gameover-sub">"CAUGHT BY YOUR ECHO"</div>
+          </div>
+
+          <div class="gameover-divider"></div>
+
+          <div class="menu-actions">
+            <button class="cyber-btn primary danger" id="btn-gameover-retry">
+              <span>RETRY</span>
+            </button>
+            <button class="cyber-btn secondary" id="btn-gameover-menu">
+              <span>MAIN MENU</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OVERLAY: Settings Modal -->
+      <div class="modal-overlay hidden" id="settings-overlay">
+        <div class="menu-box settings-box">
+          <h2 class="modal-title">SETTINGS</h2>
+          <div class="modal-sub">Audio & Visual Diagnostics</div>
+
+          <div class="settings-list">
+            <div class="setting-item">
+              <div class="setting-header">
+                <label for="slider-master-volume">MASTER VOLUME</label>
+                <span class="setting-val" id="val-master-volume">80%</span>
+              </div>
+              <input type="range" class="cyber-slider" id="slider-master-volume" min="0" max="100" value="80">
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-header">
+                <label for="slider-sfx-volume">SFX VOLUME</label>
+                <span class="setting-val" id="val-sfx-volume">80%</span>
+              </div>
+              <input type="range" class="cyber-slider" id="slider-sfx-volume" min="0" max="100" value="80">
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-header">
+                <label for="slider-ambient-volume">FACILITY AMBIENCE</label>
+                <span class="setting-val" id="val-ambient-volume">65%</span>
+              </div>
+              <input type="range" class="cyber-slider" id="slider-ambient-volume" min="0" max="100" value="65">
+            </div>
+
+            <div class="setting-item toggle-row">
+              <span>SCREEN SHAKE</span>
+              <button class="toggle-btn active" id="btn-toggle-shake">ENABLED</button>
+            </div>
+
+            <div class="setting-item toggle-row">
+              <span>DISTORTION EFFECTS</span>
+              <button class="toggle-btn active" id="btn-toggle-distortion">ENABLED</button>
+            </div>
+          </div>
+
+          <div class="modal-foot">
+            <button class="cyber-btn primary" id="btn-close-settings">
+              <span>CLOSE</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OVERLAY: Cinematic Ending -->
+      <div class="modal-overlay hidden" id="ending-overlay">
+        <div class="menu-box cinematic-ending">
+          <div class="stamp-badge victory">TIMELINE LIBERATED</div>
+          <div class="glitch-title-wrapper">
+            <h1 class="ending-main-title">ECHO</h1>
+            <div class="title-sub" style="font-size: 1.25rem; letter-spacing: 0.16em; color: #00f0ff; margin-top: 8px; font-weight: 700;">"YOU ESCAPED YOUR PAST"</div>
+          </div>
+
+          <p class="cinematic-narrative">
+            You step through the extraction threshold as the facility collapses into quantum quiet behind you. 
+            By outmaneuvering your past echoes, surviving paradox anomalies, and harmonizing your timelines, you have broken free from the loop.
+          </p>
+
+          <div class="stats-panel">
+            <div class="stat-card">
+              <div class="stat-label">TIME</div>
+              <div class="stat-number" id="ending-time">00:00.0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">ORBS COLLECTED</div>
+              <div class="stat-number" id="ending-orbs">17 / 17</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">ECHOES CREATED</div>
+              <div class="stat-number" id="ending-echoes">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">PARADOXES SOLVED</div>
+              <div class="stat-number" id="ending-paradoxes">0</div>
+            </div>
+          </div>
+
+          <div class="menu-actions">
+            <button class="cyber-btn primary" id="btn-ending-replay">
+              <span>PLAY AGAIN</span>
+            </button>
+            <button class="cyber-btn secondary" id="btn-ending-menu">
+              <span>MAIN MENU</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL: How to Play -->
+      <div class="modal-overlay hidden" id="how-to-play-overlay">
+        <div class="menu-box briefing">
+          <h2 class="modal-title">MISSION PROTOCOLS</h2>
+          <div class="modal-sub">Facility Survival Directive</div>
+
+          <div class="briefing-grid">
+            <div class="briefing-card">
+              <div class="card-icon cyan-icon">●</div>
+              <h3>1. The Operative (You)</h3>
+              <p>Navigate with <strong>WASD</strong> or <strong>Arrow Keys</strong>. Your path is recorded as you move through facility corridors.</p>
+            </div>
+
+            <div class="briefing-card">
+              <div class="card-icon red-icon">◈</div>
+              <h3>2. The Echo</h3>
+              <p>When the memory cycle expires, an <strong>Echo</strong> manifests to replay your exact previous route. In later sectors, <strong>up to 3 Echoes</strong> replay simultaneously!</p>
+            </div>
+
+            <div class="briefing-card">
+              <div class="card-icon yellow-icon">◆</div>
+              <h3>3. Energy Orbs</h3>
+              <p>Collect all required <strong>Energy Orbs</strong> in the sector. The exit portal unlocks once all orbs are retrieved.</p>
+            </div>
+
+            <div class="briefing-card">
+              <div class="card-icon red-icon">⏳</div>
+              <h3>4. Paradox Zones</h3>
+              <p>Glowing red temporal fields. Stepping into one <strong>rewinds your position by 3 seconds</strong>. <strong>Echoes do NOT rewind</strong>!</p>
+            </div>
+
+            <div class="briefing-card">
+              <div class="card-icon cyan-icon">🔘</div>
+              <h3>5. Blue Switches</h3>
+              <p>Biometric sensors that can <strong>ONLY be triggered by the Player</strong> to open blast doors.</p>
+            </div>
+
+            <div class="briefing-card">
+              <div class="card-icon red-icon">⬢</div>
+              <h3>6. Red Switches</h3>
+              <p>Temporal sensors that can <strong>ONLY be triggered by an Echo</strong>! Walk over it in Cycle 1 so your Echo holds the door open in Cycle 2.</p>
+            </div>
+          </div>
+
+          <div class="briefing-tip">
+            <strong>TACTICAL MASTERCLASS:</strong> Your Echo is both your greatest hazard and your greatest ally. Walk onto a Red Switch during Cycle 1 so your Echo holds the door open for you in Cycle 2!
+          </div>
+
+          <div class="modal-foot" style="gap: 14px;">
+            <button class="cyber-btn primary" id="btn-how-to-play-start">
+              <span>START MISSION</span>
+            </button>
+            <button class="cyber-btn secondary" id="btn-close-how-to-play">
+              <span>BACK</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL: Level Select -->
+      <div class="modal-overlay hidden" id="level-select-overlay">
+        <div class="menu-box select-box">
+          <h2 class="modal-title">SECTOR ARCHIVES</h2>
+          <div class="modal-sub">Select Sector for Temporal Insertion</div>
+
+          <div class="level-grid" id="level-grid">
+            <!-- Dynamically populated -->
+          </div>
+
+          <div class="modal-foot">
+            <button class="cyber-btn secondary" id="btn-close-level-select">
+              <span>BACK</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Game Scripts (ES Modules) -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
